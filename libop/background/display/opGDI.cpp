@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+﻿// #include "stdafx.h"
 #include "opGDI.h"
 
 #include <atlimage.h>
@@ -22,7 +22,8 @@ opGDI::~opGDI() {
 }
 
 long opGDI::BindEx(HWND hwnd, long render_type) {
-  if (!::IsWindow(hwnd)) return 0;
+  if (!::IsWindow(hwnd))
+    return 0;
   _hwnd = hwnd;
   _render_type = render_type;
 
@@ -38,7 +39,7 @@ long opGDI::BindEx(HWND hwnd, long render_type) {
     dx_ = pt.x - rc.left;
     dy_ = pt.y - rc.top;
     _hdc = ::GetDC(NULL);
-  } else {  // client size
+  } else { // client size
     RECT rc, rc2;
     ::GetWindowRect(_hwnd, &rc);
     ::GetClientRect(hwnd, &rc2);
@@ -51,16 +52,16 @@ long opGDI::BindEx(HWND hwnd, long render_type) {
     /*setlog("dx=%d dy=%d", dx_, dy_);*/
     if (_render_type == RDT_GDI) {
       _hdc = ::GetDC(_hwnd);
-      //SetWindowLongA(topHwnd, GWL_EXSTYLE, dwExStyle | WS_EX_LAYERED);
-      //UpdateWindow(topHwnd);
+      // SetWindowLongA(topHwnd, GWL_EXSTYLE, dwExStyle | WS_EX_LAYERED);
+      // UpdateWindow(topHwnd);
 
     } else if (RDT_GDI_DX2 == render_type) {
       _hdc = ::GetDC(_hwnd);
       _device_caps = GetDeviceCaps(_hdc, BITSPIXEL);
     } else {
-    /*  HWND dx2TopHwnd = WinApi::GetTopWindowSp(_hwnd);
-      GetPropA(dx2TopHwnd, "opstyle");
-      long dx2ExStyle = GetWindowLongA(dx2TopHwnd, GWL_EXSTYLE);*/
+      /*  HWND dx2TopHwnd = WinApi::GetTopWindowSp(_hwnd);
+        GetPropA(dx2TopHwnd, "opstyle");
+        long dx2ExStyle = GetWindowLongA(dx2TopHwnd, GWL_EXSTYLE);*/
       /*if (GetPropA(dx2TopHwnd, "opstyle_flag")) {
         dx2ExStyle = GetWindowLongA(dx2TopHwnd, GWL_EXSTYLE);
       } else {
@@ -69,8 +70,8 @@ long opGDI::BindEx(HWND hwnd, long render_type) {
         SetPropA(dx2TopHwnd, "opstyle_flag", (HANDLE)HANDLE_FLAG_INHERIT);
       }
     */
-     /* SetWindowLongA(dx2TopHwnd, GWL_EXSTYLE, dx2ExStyle | WS_EX_LAYERED);
-      UpdateWindow(dx2TopHwnd);*/
+      /* SetWindowLongA(dx2TopHwnd, GWL_EXSTYLE, dx2ExStyle | WS_EX_LAYERED);
+       UpdateWindow(dx2TopHwnd);*/
       _hdc = ::GetDC(_hwnd);
     }
   }
@@ -80,7 +81,7 @@ long opGDI::BindEx(HWND hwnd, long render_type) {
     return 0;
   }
 
-  //创建一个与指定设备兼容的内存设备上下文环境
+  // 创建一个与指定设备兼容的内存设备上下文环境
   _hmdc = CreateCompatibleDC(_hdc);
   if (_hmdc == NULL) {
     setlog("CreateCompatibleDC false");
@@ -95,43 +96,47 @@ long opGDI::UnBindEx() {
   // setlog("bkgdi::UnBindEx()");
   _hbmpscreen = (HBITMAP)SelectObject(_hmdc, _hbmp_old);
   // delete[dwLen_2]hDib;
-  if (_hdc) DeleteDC(_hdc);
+  if (_hdc)
+    DeleteDC(_hdc);
   _hdc = NULL;
-  if (_hmdc) DeleteDC(_hmdc);
+  if (_hmdc)
+    DeleteDC(_hmdc);
   _hmdc = NULL;
 
-  if (_hbmpscreen) DeleteObject(_hbmpscreen);
+  if (_hbmpscreen)
+    DeleteObject(_hbmpscreen);
   _hbmpscreen = NULL;
   // if (_hbmp_old)DeleteObject(_hbmp_old); _hbmp_old = NULL;
   return 1;
 }
 
-bool opGDI::requestCapture(int x1, int y1, int w, int h, Image& img) {
+bool opGDI::requestCapture(int x1, int y1, int w, int h, Image &img) {
   // step 1.判断 窗口是否存在
-  if (!::IsWindow(_hwnd)) return 0;
+  if (!::IsWindow(_hwnd))
+    return 0;
   img.create(w, h);
-  if (_render_type == RDT_NORMAL) {  // normal 拷贝的大小为实际需要的大小
+  if (_render_type == RDT_NORMAL) { // normal 拷贝的大小为实际需要的大小
     //
     /*	int w = rect.right - rect.left;
             int h = rect.bottom - rect.top;*/
     _hbmpscreen = CreateCompatibleBitmap(
-        _hdc, w, h);  //创建与指定的设备环境相关的设备兼容的位图
+        _hdc, w, h); // 创建与指定的设备环境相关的设备兼容的位图
     _hbmp_old = (HBITMAP)SelectObject(
-        _hmdc, _hbmpscreen);  //选择一对象到指定的设备上下文环境中
+        _hmdc, _hbmpscreen); // 选择一对象到指定的设备上下文环境中
 
     _bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
     _bfh.bfSize = _bfh.bfOffBits + w * h * 4;
     _bfh.bfType = static_cast<WORD>(0x4d42);
 
-    _bih.biBitCount = 32;  //每个像素字节大小
+    _bih.biBitCount = 32; // 每个像素字节大小
     _bih.biCompression = BI_RGB;
-    _bih.biHeight = h;  //高度
+    _bih.biHeight = h; // 高度
     _bih.biPlanes = 1;
     _bih.biSize = sizeof(BITMAPINFOHEADER);
-    _bih.biSizeImage = w * h * 4;  //图像数据大小
-    _bih.biWidth = w;              //宽度
+    _bih.biSizeImage = w * h * 4; // 图像数据大小
+    _bih.biWidth = w;             // 宽度
 
-    //对指定的源设备环境区域中的像素进行位块（bit_block）转换
+    // 对指定的源设备环境区域中的像素进行位块（bit_block）转换
 
     RECT rc;
     ::GetWindowRect(_hwnd, &rc);
@@ -145,21 +150,23 @@ bool opGDI::requestCapture(int x1, int y1, int w, int h, Image& img) {
       setlog("error in bitbit");
     }
 
-    //函数获取指定兼容位图的位，然后将其作一个DIB—设备无关位图（Device-Independent
-    // Bitmap）使用的指定格式复制到一个缓冲区中 _pmutex->lock();
-    uchar* pshare = _shmem->data<byte>();
+    // 函数获取指定兼容位图的位，然后将其作一个DIB—设备无关位图（Device-Independent
+    //  Bitmap）使用的指定格式复制到一个缓冲区中 _pmutex->lock();
+    uchar *pshare = _shmem->data<byte>();
     fmtFrameInfo(pshare, _hwnd, w, h);
     GetDIBits(_hmdc, _hbmpscreen, 0L, (DWORD)h, pshare + sizeof(FrameInfo),
               (LPBITMAPINFO)&_bih, (DWORD)DIB_RGB_COLORS);
 
     //_pmutex->unlock();
-    if (_hbmpscreen) DeleteObject(_hbmpscreen);
+    if (_hbmpscreen)
+      DeleteObject(_hbmpscreen);
     _hbmpscreen = NULL;
 
-    //将数据拷贝到目标注意实际数据是反的
+    // 将数据拷贝到目标注意实际数据是反的
 
     for (int i = 0; i < h; i++) {
-      memcpy(img.ptr<uchar>(i), _shmem->data<byte>() + sizeof(FrameInfo) + (h - 1 - i) * 4 * w,
+      memcpy(img.ptr<uchar>(i),
+             _shmem->data<byte>() + sizeof(FrameInfo) + (h - 1 - i) * 4 * w,
              4 * w);
     }
   } else if (RDT_GDI_DX2 == _render_type) {
@@ -168,8 +175,8 @@ bool opGDI::requestCapture(int x1, int y1, int w, int h, Image& img) {
     BitBlt(image.GetDC(), 0, 0, w, h, _hdc, x1, y1, SRCCOPY);
     img.read(&image);
     image.ReleaseDC();
-  } else {  // gdi ... 由于printwindow 函数的原因
-            // 截取大小为实际的窗口大小，在后续的处理中，需要转化成客户区大小
+  } else { // gdi ... 由于printwindow 函数的原因
+           // 截取大小为实际的窗口大小，在后续的处理中，需要转化成客户区大小
     //
     RECT rc;
     ::GetWindowRect(_hwnd, &rc);
@@ -178,23 +185,23 @@ bool opGDI::requestCapture(int x1, int y1, int w, int h, Image& img) {
     // setlog("_w w=%d %d _h h=%d %d,dx=%d dy=%d", _width, w, _height, h, dx_,
     // dy_);
     _hbmpscreen = CreateCompatibleBitmap(
-        _hdc, ww, wh);  //创建与指定的设备环境相关的设备兼容的位图
+        _hdc, ww, wh); // 创建与指定的设备环境相关的设备兼容的位图
     _hbmp_old = (HBITMAP)SelectObject(
-        _hmdc, _hbmpscreen);  //选择一对象到指定的设备上下文环境中
+        _hmdc, _hbmpscreen); // 选择一对象到指定的设备上下文环境中
 
     _bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
     _bfh.bfSize = _bfh.bfOffBits + ww * wh * 4;
     _bfh.bfType = static_cast<WORD>(0x4d42);
 
-    _bih.biBitCount = 32;  //每个像素字节大小
+    _bih.biBitCount = 32; // 每个像素字节大小
     _bih.biCompression = BI_RGB;
-    _bih.biHeight = wh;  //高度
+    _bih.biHeight = wh; // 高度
     _bih.biPlanes = 1;
     _bih.biSize = sizeof(BITMAPINFOHEADER);
-    _bih.biSizeImage = ww * wh * 4;  //图像数据大小
-    _bih.biWidth = ww;               //宽度
+    _bih.biSizeImage = ww * wh * 4; // 图像数据大小
+    _bih.biWidth = ww;              // 宽度
 
-    //对指定的源设备环境区域中的像素进行位块（bit_block）转换
+    // 对指定的源设备环境区域中的像素进行位块（bit_block）转换
 
     if (_render_type == RDT_GDI) {
       ::PrintWindow(_hwnd, _hmdc, 0);
@@ -202,20 +209,21 @@ bool opGDI::requestCapture(int x1, int y1, int w, int h, Image& img) {
     } else {
       ::UpdateWindow(_hwnd);
       //::RedrawWindow(_hwnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE |
-      //:RDW_ALLCHILDREN | RDW_FRAME);
+      //: RDW_ALLCHILDREN | RDW_FRAME);
       ::PrintWindow(_hwnd, _hmdc, 0);
     }
-    //函数获取指定兼容位图的位，然后将其作一个DIB—设备无关位图（Device-Independent
-    // Bitmap）使用的指定格式复制到一个缓冲区中 _pmutex->lock();
-    uchar* pshare = _shmem->data<byte>();
+    // 函数获取指定兼容位图的位，然后将其作一个DIB—设备无关位图（Device-Independent
+    //  Bitmap）使用的指定格式复制到一个缓冲区中 _pmutex->lock();
+    uchar *pshare = _shmem->data<byte>();
     fmtFrameInfo(pshare, _hwnd, w, h);
     GetDIBits(_hmdc, _hbmpscreen, 0L, (DWORD)wh, pshare + sizeof(FrameInfo),
               (LPBITMAPINFO)&_bih, (DWORD)DIB_RGB_COLORS);
 
-    if (_hbmpscreen) DeleteObject(_hbmpscreen);
+    if (_hbmpscreen)
+      DeleteObject(_hbmpscreen);
     _hbmpscreen = NULL;
 
-    //将数据拷贝到目标注意实际数据是反的(注意偏移)
+    // 将数据拷贝到目标注意实际数据是反的(注意偏移)
     auto ppixels = _shmem->data<byte>() + sizeof(FrameInfo);
     for (int i = 0; i < h; i++) {
       memcpy(img.ptr<uchar>(i),
@@ -225,7 +233,7 @@ bool opGDI::requestCapture(int x1, int y1, int w, int h, Image& img) {
   }
   return 1;
 }
-void opGDI::fmtFrameInfo(void* dst, HWND hwnd, int w, int h) {
+void opGDI::fmtFrameInfo(void *dst, HWND hwnd, int w, int h) {
   m_frameInfo.hwnd = (unsigned __int64)hwnd;
   m_frameInfo.frameId++;
   m_frameInfo.time = ::GetTickCount64();

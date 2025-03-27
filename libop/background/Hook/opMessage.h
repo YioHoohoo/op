@@ -1,4 +1,4 @@
-#ifndef __OP_MESSAGE_H_
+﻿#ifndef __OP_MESSAGE_H_
 #define __OP_MESSAGE_H_
 #include <WinUser.h>
 #define OP_MAKE_MESSAGE(msg) (WM_USER + msg)

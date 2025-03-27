@@ -1,0 +1,13 @@
+﻿---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 2
+TabWidth: 2
+ColumnLimit: 80
+SortIncludes: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterNamespace: false
+    AfterClass: false
+    AfterFunction: false
+---

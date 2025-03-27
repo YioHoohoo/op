@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef __optype_h_
 #define __optype_h_
 #include <Windows.h>
@@ -21,13 +21,13 @@ struct point_t {
   int x, y;
   point_t() : x(0), y(0) {}
   point_t(int x_, int y_) : x(x_), y(y_) {}
-  bool operator<(const point_t& rhs) const {
+  bool operator<(const point_t &rhs) const {
     if (std::abs(y - rhs.y) < 9)
       return x < rhs.x;
     else
       return y < rhs.y;
   }
-  bool operator==(const point_t& rhs) const { return x == rhs.x && y == rhs.y; }
+  bool operator==(const point_t &rhs) const { return x == rhs.x && y == rhs.y; }
 };
 
 using vpoint_t = std::vector<point_t>;
@@ -35,21 +35,20 @@ using vpoint_t = std::vector<point_t>;
 class NumberGen {
   int _q, _r;
 
- public:
+public:
   NumberGen(int n, int cnt) : _q(n / cnt), _r(n % cnt) {}
   int operator[](int idx) const { return idx < _r ? _q + 1 : _q; }
 };
 
 struct rect_t {
   rect_t() : x1(0), y1(0), x2(0), y2(0) {}
-  rect_t(int x1_, int y1_, int x2_, int y2_)
-      : x1(x1_), y1(y1_), x2(x2_), y2(y2_) {}
+  rect_t(int x1_, int y1_, int x2_, int y2_) : x1(x1_), y1(y1_), x2(x2_), y2(y2_) {}
   int x1, y1;
   int x2, y2;
   int width() const { return x2 - x1; }
   int height() const { return y2 - y1; }
   int area() const { return width() * height(); }
-  rect_t& shrinkRect(int w, int h) {
+  rect_t &shrinkRect(int w, int h) {
     x2 -= w;
     y2 -= h;
     x2 += 1;
@@ -58,7 +57,7 @@ struct rect_t {
   }
   bool valid() const { return 0 <= x1 && x1 < x2 && 0 <= y1 && y1 < y2; }
 
-  void divideBlock(int count, bool vertical, std::vector<rect_t>& blocks) {
+  void divideBlock(int count, bool vertical, std::vector<rect_t> &blocks) {
     assert(valid());
 
     assert(count > 0);
@@ -94,16 +93,15 @@ struct point_desc_t {
 using vpoint_desc_t = std::vector<point_desc_t>;
 // ocr result
 struct ocr_rec_t {
-    // BBox of the text
-    point_t left_top;
-    point_t right_bottom;
-    // content of the text
-    wstring text;
-    // confidence of the text
-    float confidence;
+  // BBox of the text
+  point_t left_top;
+  point_t right_bottom;
+  // content of the text
+  wstring text;
+  // confidence of the text
+  float confidence;
 };
 
 using vocr_rec_t = std::vector<ocr_rec_t>;
-
 
 #endif
